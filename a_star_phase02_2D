@@ -145,3 +145,55 @@ def calculate_cost(current_node, ul, ur):
         return child_node, int(D)
     else:
         return None, None
+    
+current_node = start_node
+
+# Action set to move the robot 
+
+action_set = [[0,rpm1], [rpm1,0], [rpm1,rpm1], [0,rpm2], [rpm2,0], [rpm2,rpm2], [rpm1,rpm2], [rpm2,rpm1]]
+
+V = np.empty((1201,401,12), dtype=object)
+for x in range(0,1201):
+    for y in range(0,401):
+        for theta in range(0,12):
+            V[x][y][theta] = 0
+
+xg = goal_node[0]
+yg = goal_node[1]
+
+# Setting the distance and angle threshold
+
+threshold_dist = 0.5
+threshold_angle = 30
+xc = current_node[0]
+yc = current_node[1]
+cost_to_go = int(math.sqrt((xg - current_node[0])**2 + (yg - current_node[1])**2))
+heapq.heappush(open_list, (cost_to_go, 0, start_node))
+heap = [(t[0] + t[1], t) for t in open_list]
+heapq.heapify(heap)
+closed_dict[start_node] = (start_node, None, 0 + cost_to_go)
+V[int(start_node[0]/threshold_dist)][int(start_node[1]/threshold_dist)][int(start_node[2]/threshold_angle)] = 1
+
+backtrack_dict = {}
+
+def generate_path(start_node, goal_node):
+    """Generates path from the start node to the goal node
+
+    Args:
+        start_node (tuple): (start_x,start_y,start_theta)
+        goal_node (_type_): (goal_x,goal_y,goal_theta)
+
+    Returns:
+        list: backtrack_path
+    """    
+    backtrack_path = []
+    current_node = goal_node_path
+    while closed_dict[current_node][0] != closed_dict[start_node][0]:
+        backtrack_path.append((closed_dict[current_node][0], (closed_dict[current_node][2])))
+        current_node = closed_dict[current_node][1]
+    backtrack_path.append((closed_dict[start_node][0], (closed_dict[start_node][2])))
+    backtrack_path.reverse()
+    for index, node in enumerate(backtrack_path):
+        backtrack_dict[index] = (node)
+    
+    return backtrack_path
