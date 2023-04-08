@@ -50,3 +50,41 @@ def make_canvas_2():
     return obstacle, canvas
 
 obstacle, canvas = make_canvas_2()
+
+# Function to get the user input
+
+def user_input():
+    """Takes start and goal coordinates as user input. Also gets the step size of the robot
+
+    Returns:
+        tuple: (start_node, goal_node, radius)
+    """    
+    valid_input = False
+    while valid_input == False:
+        global start_x, start_y, clearance
+        start_x = int(input("Enter X coordinate of start node (in cm) between 0 and 600: "))  # X coordinate of start node
+        start_y = int(input("Enter Y coordinate of start node (in cm) between 0 and 200: "))  # Y coordinate of start node
+        start_theta = int(input("Enter the theta at the start node from 0 to 360: "))    # Angle at the start node
+        goal_x = int(input("Enter X coordinate of goal node (in cm) between 0 and 600: "))    # X coordinate of goal node
+        goal_y = int(input("Enter Y coordinate of goal node (in cm) between 0 and 200: "))    # Y coordinate of goal node           
+        rpm1 = int(input("Rpm value 1: "))
+        rpm2 = int(input("Rpm value 2: "))     
+
+        start_node = (int(start_x),int(start_y),start_theta)
+        goal_node = (int(goal_x),int(goal_y))
+        rpm_choices = (rpm1, rpm2)
+        
+        if (start_node[0], start_node[1]) in obstacle:
+            print(f"Start node {start_node} is in obstacle space. Enter another node.") # Error message if start node is in obstacle space
+            valid_input = False
+        elif goal_node in obstacle:
+            print(f"Goal node {goal_node} is in obstacle space. Enter another node") # Error message if goal node is in obstacle space
+            valid_input = False
+        elif start_x<0 or start_x>600 or goal_x<0 or goal_x>600 or start_y<0 or start_y>200 or goal_y<0 or goal_y>200 or start_theta<0 or start_theta>360:
+            print("The coordinates you entered are beyond the scope of the map. Enter valid start and goal coordinates.") # Error message if start or goal node is beyond the scope of the map
+            valid_input = False
+        elif (start_node[0], start_node[1]) not in obstacle and goal_node not in obstacle:
+            valid_input = True
+            break
+        
+    return start_node, goal_node, rpm_choices
