@@ -88,3 +88,60 @@ def user_input():
             break
         
     return start_node, goal_node, rpm_choices
+
+start_node, goal_node, rpm_choices = user_input()
+rpm1 = rpm_choices[0]
+rpm2 = rpm_choices[1]
+
+closed_dict = {}
+open_list = []
+
+
+def calculate_cost(current_node, ul, ur):  
+    """Function to move the robot with a step size equal to the radius and orientation same as the start theta.
+
+    Args:
+        current_node (tuple): The node that is currently being explored
+        cost (int): The cost to move the robot with step size equal to radius. Defaults to 1.
+
+    Returns:
+        tuple: (child node, cost)
+    """    
+    x, y, theta = current_node[0], current_node[1], current_node[2]
+    t = 0
+    # r = 0.038
+    # L = 0.354
+    r = 0.033
+    L = 0.16
+    # r = 3.3
+    # L = 0.16
+    dt = 0.1
+    xn = x
+    yn = y
+    thetan = 3.14 * theta / 180
+    # Xi, Yi,Thetai: Input point's coordinates
+    # Xs, Ys: Start point coordinates for plot function
+    # Xn, Yn, Thetan: End point coordintes
+    D = 0
+
+    while t<1:
+        t = t + dt
+        xs = x
+        ys = y
+        a = 0.5 * r * (ul + ur) * math.cos(thetan) * dt
+        b = 0.5 * r * (ul + ur) * math.sin(thetan) * dt
+        xn += a
+        yn += b
+        thetan += (r / L) * (ur - ul) * dt
+        D = math.sqrt((xn-xs)**2 + (yn-ys)**2)
+    thetan = 180 * (thetan) / 3.14
+
+    while thetan < 0:
+        thetan += 360
+    while thetan > 360:
+        thetan -= 360
+    if -1<int(xn)<601 and -1<int(yn)<201 and -1<int(thetan)<361:
+        child_node = (int(xn), int(yn), int(thetan))
+        return child_node, int(D)
+    else:
+        return None, None
