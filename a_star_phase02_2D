@@ -254,3 +254,16 @@ def a_star(start_node, goal_node):
 
     if not open_list:
         print("Goal node cannot be reached.")
+        
+a_star(start_node, goal_node)
+
+for key in backtrack_dict:
+    try:
+        point1 = (backtrack_dict[key][0][0], backtrack_dict[key][0][1])
+        point2 = (backtrack_dict[int(key+1)][0][0], backtrack_dict[int(key+1)][0][1])
+        cv2.arrowedLine(canvas, point1, point2, (255,0,255), 1, tipLength=1) # Plotting the nodes in the path as arrowed lines
+        canvas_flip = cv2.flip(canvas,0)    # Inverting the y axis since origin is at the bottom left
+        cv2.imshow("canvas", canvas_flip)
+        cv2.waitKey(10)
+    except:
+        pass
