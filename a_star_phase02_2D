@@ -1,0 +1,52 @@
+#!/usr/bin/python3
+
+# Import the necessary libraries
+
+import numpy as np
+import math
+import heapq
+import cv2
+
+# import rospy
+# from geometry_msgs.msg import Twist
+# from std_msgs.msg import String
+# import time
+
+
+def make_canvas_2():
+    """This function creates the map with the obstacles
+
+    Returns:
+        tuple: (obstacle, canvas)
+    """    
+    canvas = np.zeros((200, 600, 3), dtype="uint8")
+    blue = (255,0,0)
+    red = (0,0,255)
+
+    clearance = int(input("Enter the clearance (in cm): "))
+    robot_radius = 10.5
+    c = int(clearance + robot_radius)
+
+    # Obstacle rectangles
+
+    cv2.rectangle(canvas, (150-c, 200), (165+c,75-c), blue, thickness=-1)
+    cv2.rectangle(canvas, (250-c,0), (265+c,125+c), blue, thickness=-1)
+    cv2.rectangle(canvas, (150,200), (165,75), red, thickness=-1)
+    cv2.rectangle(canvas, (250,0), (265,125), red, thickness=-1)
+
+    cv2.circle(canvas, (400,90), 50+c, blue, thickness=-1)
+    cv2.circle(canvas, (400,90), 50, red, thickness=-1)
+
+    # Finding all the nonzero pixels from the canvas and appending them to the list of obstacle points
+
+    obstacle = []
+    for y in range(canvas.shape[0]):
+        for x in range(canvas.shape[1]):
+            if canvas[y,x].any():
+                obstacle.append((x,y))
+
+    # Returning the obstacle space and the canvas image
+
+    return obstacle, canvas
+
+obstacle, canvas = make_canvas_2()
