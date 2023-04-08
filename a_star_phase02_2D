@@ -197,3 +197,60 @@ def generate_path(start_node, goal_node):
         backtrack_dict[index] = (node)
     
     return backtrack_path
+
+def a_star(start_node, goal_node):
+    global goal_node_path
+    """A-Star Algorithm to find out the optimal path between start node and goal node.
+
+    Args:
+        start_node (tuple): (start_x,start_y,start_theta)
+        goal_node (tuple): (goal_x,goal_y,goal_theta)
+    """
+    while open_list:
+        heap = [(t[0] + t[1], t) for t in open_list]
+        heapq.heapify(heap)
+        cost_to_go, cost_to_come, current_node = heapq.heappop(open_list)
+        if int(current_node[0]) == xg and int(current_node[1]) == yg:
+            print("Goal node reached.")
+            for key, value in closed_dict.items():
+                if key[0] == xg and key[1] == yg:
+                    goal_node_path = (xg,yg,key[2])
+            path = generate_path(start_node, goal_node)
+            print(path) # Printing the backtrack path along with the cost
+            print()
+            print('-'*100)
+            print(f"Total cost required to reach goal node : {closed_dict[goal_node_path][2]}")  # Printing the total cost required to reach the goal node
+            print('-'*100)
+            break
+        elif V[int(current_node[0]/threshold_dist)][int(current_node[1]/threshold_dist)][int(current_node[2]/threshold_angle)] == 1 and closed_dict[current_node][2] < cost_to_come + cost_to_go:
+            continue
+        for move in action_set:
+            try:
+                ul = move[0]
+                ur = move[1]
+                k = calculate_cost(current_node,ul,ur)
+                cost = k[1]
+                child_node = k[0]
+                if cost is not None:
+                    cost_to_come += cost
+                    # cost_to_come = cost
+                if child_node is not None and V[int(child_node[0]/threshold_dist)][int(child_node[1]/threshold_dist)][int(child_node[2]/threshold_angle)] != 1 and (int(child_node[0]),int(child_node[1])) not in obstacle:
+                    cost_to_go = int(math.sqrt((xg - int(child_node[0]))**2 + (yg - int(child_node[1]))**2))   # Calculating the cost to go the goal node from child node
+                    heapq.heappush(open_list, (cost_to_go, cost_to_come, child_node))           # Appending the child node to the open list
+                    heap = [(t[0] + t[1], t) for t in open_list]
+                    heapq.heapify(heap)
+                    closed_dict[child_node] = (child_node, current_node, cost_to_come + cost_to_go) # Updating the visited nodes in the dictionary
+                    V[int(child_node[0]/threshold_dist)][int(child_node[1]/threshold_dist)][int(child_node[2]/threshold_angle)] = 1 # Storing information to avoid duplicate nodes
+                    point1 = (closed_dict[child_node][1][0], closed_dict[child_node][1][1])
+                    point2 = (closed_dict[child_node][0][0], closed_dict[child_node][0][1])
+                    cv2.arrowedLine(canvas, point1, point2, (0,255,0), 1, tipLength=1)    # Plotting the arrowed line for visited nodes
+                    canvas_flip = cv2.flip(canvas,0)    # Inverting the y axis since origin is at the bottom left
+                    cv2.imshow("canvas", canvas_flip)
+                    cv2.waitKey(1)
+                elif child_node is not None and V[int(child_node[0]/threshold_dist)][int(child_node[1]/threshold_dist)][int(child_node[2]/threshold_angle)] == 1 and closed_dict[child_node][2] > cost_to_come + cost_to_go and (int(child_node[0]),int(child_node[1])) not in obstacle:
+                    closed_dict[child_node] = (child_node, current_node, cost_to_come + cost_to_go) # Updating the total cost if the node has already been visited
+            except:
+                pass
+
+    if not open_list:
+        print("Goal node cannot be reached.")
