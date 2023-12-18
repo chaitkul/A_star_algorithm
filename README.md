@@ -24,3 +24,5 @@ Steps to run the code for 2D visualization:
 4. After the robot reaches the goal node, it will plot the shortest path.
 
 5. Finally, the path and total cost from start node to goal node is being printed.
+
+Video Link: https://drive.google.com/file/d/1WByrbX8UGzbiZjGNKqkpTPUQl6N-J6Xw/view?usp=drive_link
