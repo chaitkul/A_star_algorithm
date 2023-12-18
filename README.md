@@ -1,4 +1,4 @@
-# a_star_phase02_2D
+# A* Algorithm
 A star algorithm implementation for 2D map
 
 Libraries used for 2D visualization:
